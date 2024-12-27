@@ -1,12 +1,20 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AuthDto, LoginDto } from './dto';
 import * as bcrypt from 'bcrypt';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { access } from 'fs';
 
 @Injectable()
 export class AuthService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private jwt: JwtService,
+    private config: ConfigService,
+  ) {}
 
   async register(authDto: AuthDto) {
     const salt = await bcrypt.genSalt(10);
@@ -21,8 +29,7 @@ export class AuthService {
           fullName: authDto.fullName,
         },
       });
-      delete user.password;
-      return user;
+      return this.signToken(user.id, user.username);
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
@@ -32,6 +39,7 @@ export class AuthService {
       throw error;
     }
   }
+
   async login(loginDto: LoginDto) {
     const user = await this.prisma.user.findUnique({
       where: {
@@ -50,7 +58,24 @@ export class AuthService {
     if (!isPasswordValid) {
       throw new ForbiddenException('Invalid password');
     }
-    delete user.password;
-    return user;
+    return this.signToken(user.id, user.username);
+  }
+
+  async signToken(
+    userId: number,
+    username: string,
+  ): Promise<{ access_token: string }> {
+    const payload = {
+      sub: userId,
+      username,
+    };
+    const token = await this.jwt.signAsync(payload, {
+      expiresIn: '1h',
+      secret: this.config.get<string>('JWT_SECRET'),
+    });
+
+    return {
+      access_token: token,
+    };
   }
 }
