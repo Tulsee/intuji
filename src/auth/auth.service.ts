@@ -6,7 +6,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { AuthDto, LoginDto } from './dto';
 import * as bcrypt from 'bcrypt';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { access } from 'fs';
 
 @Injectable()
 export class AuthService {
