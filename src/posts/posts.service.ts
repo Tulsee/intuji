@@ -22,16 +22,43 @@ export class PostsService {
     });
 
     if (!post) {
-    //   throw new NotFoundException(`Post with ID ${postId} not found`);
+      //   throw new NotFoundException(`Post with ID ${postId} not found`);
       return {};
     }
 
     return post;
   }
 
-  getPosts(userId?: number) {
-    return this.prisma.post.findMany({
-      where: userId ? { authorId: userId } : undefined,
+  getPosts() {
+    return this.prisma.post.findMany();
+  }
+
+  async createComment(postId: number, userId: number, content: string) {
+    const post = await this.prisma.post.findUnique({
+      where: { id: postId },
     });
+
+    if (!post) {
+      throw new NotFoundException(`Post with ID ${postId} not found`);
+    }
+    const comment = await this.prisma.comment.create({
+      data: {
+        content,
+        postId,
+        userId,
+      },
+    });
+
+    return comment;
+  }
+
+  async getComments(postId: number) {
+    const comments = await this.prisma.comment.findMany({
+      where: {
+        postId,
+      },
+    });
+
+    return comments;
   }
 }
