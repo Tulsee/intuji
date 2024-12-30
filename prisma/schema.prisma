@@ -31,6 +31,19 @@ model User {
   @@map("users")
 }
 
+model Image {
+  id Int @id @default(autoincrement())
+
+  url String
+
+  postId Int
+  post Post @relation(fields:[postId], references:[id])
+
+  createdAt DateTime @default(now())
+
+  @@map("images")
+}
+
 model Post {
   id Int @id @default(autoincrement())
 
@@ -44,6 +57,7 @@ model Post {
  author   User @relation(fields: [authorId], references: [id])
 
  comments Comment[]
+ images Image[]
 
  @@map("posts")
 }

@@ -61,4 +61,22 @@ export class PostsService {
 
     return comments;
   }
+
+  async uploadImage(postId: number, url: string) {
+    const post = await this.prisma.post.findUnique({
+      where: { id: postId },
+    });
+
+    if (!post) {
+      throw new NotFoundException(`Post with ID ${postId} not found`);
+    }
+
+    const image = await this.prisma.image.create({
+      data: {
+        url,
+        postId,
+      },
+    });
+    return image;
+  }
 }
