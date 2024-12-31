@@ -125,4 +125,28 @@ export class PostsService {
     });
     return updatedPost;
   }
+
+  async deletePost(postId: number, userId: number) {
+    const post = await this.prisma.post.findUnique({
+      where: { id: postId },
+    });
+
+    if (!post) {
+      throw new NotFoundException(`Post with ID ${postId} not found`);
+    }
+    if (post.authorId !== userId) {
+      throw new NotFoundException(`You are not authorized to update this post`);
+    }
+
+    await this.prisma.$transaction(async (prisma) => {
+      await prisma.comment.deleteMany({
+        where: { postId: postId },
+      });
+
+      await prisma.post.delete({
+        where: { id: postId },
+      });
+    });
+    return { message: 'Post deleted successfully' };
+  }
 }

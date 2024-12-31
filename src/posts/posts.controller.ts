@@ -16,7 +16,12 @@ import { GetUser } from 'src/auth/decorator';
 import { diskStorage } from 'multer';
 import { PostsService } from './posts.service';
 import { JwtGuard } from 'src/auth/guard';
-import { CreateCommentsDto, CreatePostsDto, EditPostDto, UploadImageDto } from './dto';
+import {
+  CreateCommentsDto,
+  CreatePostsDto,
+  EditPostDto,
+  UploadImageDto,
+} from './dto';
 import { extname } from 'path';
 import {
   ApiBearerAuth,
@@ -127,5 +132,15 @@ export class PostsController {
     @Body() dto: EditPostDto,
   ) {
     return this.postsService.updatePost(postId, userId, dto);
+  }
+
+  @UseGuards(JwtGuard)
+  @Delete(':postId')
+  @ApiOperation({ summary: 'Delete a post' })
+  deletePost(
+    @GetUser('id') userId: number,
+    @Param('postId', ParseIntPipe) postId: number,
+  ) {
+    return this.postsService.deletePost(postId, userId);
   }
 }
