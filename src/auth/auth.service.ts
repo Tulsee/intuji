@@ -50,10 +50,15 @@ export class AuthService {
       throw new ForbiddenException('Invalid username');
     }
 
+    console.log('Stored password hash:', user.password);
+    console.log('Provided password:', loginDto.password);
+
     const isPasswordValid = await bcrypt.compare(
       loginDto.password,
       user.password,
     );
+    console.log('Password comparison result:', isPasswordValid);
+
     if (!isPasswordValid) {
       throw new ForbiddenException('Invalid password');
     }
