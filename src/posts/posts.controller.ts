@@ -23,6 +23,9 @@ import {
   ApiConsumes,
   ApiOperation,
 } from '@nestjs/swagger';
+import { RolesGuard } from 'src/auth/guard/roles.guard';
+import { Roles } from 'src/auth/decorator/roles.decorator';
+import { Role } from 'src/auth/enums/role.enum';
 
 @Controller('posts')
 @ApiBearerAuth()
@@ -34,22 +37,24 @@ export class PostsController {
     return this.postsService.getPosts();
   }
 
-  @UseGuards(JwtGuard)
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(Role.User, Role.SuperAdmin)
   @Get(':id')
   @ApiOperation({ summary: 'Get post by id' })
   getPostById(@Param('id', ParseIntPipe) postId: number) {
-    console.log('world');
     return this.postsService.getPostById(postId);
   }
 
-  @UseGuards(JwtGuard)
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(Role.User, Role.SuperAdmin)
   @Post()
   @ApiOperation({ summary: 'Create a post' })
   createPost(@GetUser('id') userId: number, @Body() dto: CreatePostsDto) {
     return this.postsService.createBlogPost(userId, dto);
   }
 
-  @UseGuards(JwtGuard)
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(Role.User, Role.SuperAdmin)
   @Post(':postId/comments')
   @ApiOperation({ summary: 'Create a comment for a post' })
   createComment(
@@ -66,7 +71,8 @@ export class PostsController {
     return this.postsService.getComments(postId);
   }
 
-  @UseGuards(JwtGuard)
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(Role.User, Role.SuperAdmin)
   @Post(':postId/image')
   @ApiOperation({ summary: 'Upload an image for a post' })
   @ApiConsumes('multipart/form-data')
@@ -105,7 +111,8 @@ export class PostsController {
     return this.postsService.uploadImage(postId, url);
   }
 
-  @UseGuards(JwtGuard)
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(Role.User, Role.SuperAdmin)
   @Delete(':postId/image')
   @ApiOperation({ summary: 'Delete post image' })
   async deleteImage(@Param('postId', ParseIntPipe) postId: number) {
