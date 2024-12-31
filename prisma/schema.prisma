@@ -36,8 +36,8 @@ model Image {
 
   url String
 
-  postId Int
   post Post @relation(fields:[postId], references:[id])
+  postId Int @unique
 
   createdAt DateTime @default(now())
 
@@ -57,7 +57,7 @@ model Post {
  author   User @relation(fields: [authorId], references: [id])
 
  comments Comment[]
- images Image[]
+ image Image?
 
  @@map("posts")
 }

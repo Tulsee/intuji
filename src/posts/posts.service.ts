@@ -1,6 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreatePostsDto } from './dto/posts.dto';
+import * as path from 'path';
+import * as fs from 'fs';
 
 @Injectable()
 export class PostsService {
@@ -78,5 +80,27 @@ export class PostsService {
       },
     });
     return image;
+  }
+
+  async deleteImage(postId: number) {
+    const image = await this.prisma.image.findFirst({
+      where: { postId },
+    });
+
+    if (!image) {
+      throw new NotFoundException(`No image found for post with ID ${postId}`);
+    }
+    const filePath = path.join(
+      process.cwd(),
+      'uploads',
+      image.url.split('/uploads/')[1],
+    );
+    fs.unlinkSync(filePath);
+
+    await this.prisma.image.delete({
+      where: { id: image.id },
+    });
+
+    return { message: 'Image deleted successfully' };
   }
 }
