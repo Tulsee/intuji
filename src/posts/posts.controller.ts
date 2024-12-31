@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   UploadedFile,
   UseGuards,
@@ -15,7 +16,7 @@ import { GetUser } from 'src/auth/decorator';
 import { diskStorage } from 'multer';
 import { PostsService } from './posts.service';
 import { JwtGuard } from 'src/auth/guard';
-import { CreateCommentsDto, CreatePostsDto, UploadImageDto } from './dto';
+import { CreateCommentsDto, CreatePostsDto, EditPostDto, UploadImageDto } from './dto';
 import { extname } from 'path';
 import {
   ApiBearerAuth,
@@ -37,8 +38,6 @@ export class PostsController {
     return this.postsService.getPosts();
   }
 
-  @UseGuards(JwtGuard, RolesGuard)
-  @Roles(Role.User, Role.SuperAdmin)
   @Get(':id')
   @ApiOperation({ summary: 'Get post by id' })
   getPostById(@Param('id', ParseIntPipe) postId: number) {
@@ -117,5 +116,16 @@ export class PostsController {
   @ApiOperation({ summary: 'Delete post image' })
   async deleteImage(@Param('postId', ParseIntPipe) postId: number) {
     return this.postsService.deleteImage(postId);
+  }
+
+  @UseGuards(JwtGuard)
+  @Patch(':postId')
+  @ApiOperation({ summary: 'Update a post' })
+  updatePost(
+    @GetUser('id') userId: number,
+    @Param('postId', ParseIntPipe) postId: number,
+    @Body() dto: EditPostDto,
+  ) {
+    return this.postsService.updatePost(postId, userId, dto);
   }
 }

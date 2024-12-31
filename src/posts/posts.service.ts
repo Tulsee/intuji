@@ -3,6 +3,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreatePostsDto } from './dto/posts.dto';
 import * as path from 'path';
 import * as fs from 'fs';
+import { EditPostDto } from './dto';
 
 @Injectable()
 export class PostsService {
@@ -102,5 +103,26 @@ export class PostsService {
     });
 
     return { message: 'Image deleted successfully' };
+  }
+
+  async updatePost(postId: number, userId: number, dto: EditPostDto) {
+    const post = await this.prisma.post.findUnique({
+      where: { id: postId },
+    });
+
+    if (!post) {
+      throw new NotFoundException(`Post with ID ${postId} not found`);
+    }
+    if (post.authorId !== userId) {
+      throw new NotFoundException(`You are not authorized to update this post`);
+    }
+
+    const updatedPost = await this.prisma.post.update({
+      where: { id: postId },
+      data: {
+        ...dto,
+      },
+    });
+    return updatedPost;
   }
 }

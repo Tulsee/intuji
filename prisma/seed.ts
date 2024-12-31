@@ -8,9 +8,6 @@ async function main() {
   const salt = 10;
   const hash = await bcrypt.hash(password, salt);
 
-  console.log('Password:', password);
-  console.log('Hashed password:', hash);
-
   const superAdmin = await prisma.user.upsert({
     where: { username: 'superadmin' },
     update: {},
