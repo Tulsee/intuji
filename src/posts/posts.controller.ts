@@ -17,9 +17,15 @@ import { PostsService } from './posts.service';
 import { JwtGuard } from 'src/auth/guard';
 import { CreateCommentsDto, CreatePostsDto, UploadImageDto } from './dto';
 import { extname } from 'path';
-import { ApiBody, ApiConsumes, ApiOperation } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+} from '@nestjs/swagger';
 
 @Controller('posts')
+@ApiBearerAuth()
 export class PostsController {
   constructor(private postsService: PostsService) {}
   @Get()

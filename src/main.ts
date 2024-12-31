@@ -19,6 +19,7 @@ async function bootstrap() {
     .setTitle('Intuji')
     .setDescription('The Intuji API Assignment')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, documentFactory);

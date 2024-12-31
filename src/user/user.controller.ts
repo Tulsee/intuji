@@ -5,8 +5,10 @@ import { GetUser } from 'src/auth/decorator';
 import { JwtGuard } from 'src/auth/guard';
 import { UserService } from './user.service';
 import { EditProfileDto } from './dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @UseGuards(JwtGuard)
+@ApiBearerAuth()
 @Controller('users')
 export class UserController {
   constructor(private userService: UserService) {}
