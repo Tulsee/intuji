@@ -15,6 +15,7 @@ To run the project using Docker, execute the following command:
 ```sh
 docker-compose up --build
 ```
+- NOTE: Docker is successfully built and run, but you may encounter CORS errors while making requests.
 
 ### 2. Running Locally
 
@@ -44,6 +45,9 @@ After successfully seeding the super user, you can log in using the super user c
 }
 ```
 ## API Endpoints
+### Swagger API Documentation
+
+Swagger API documentation is also implemented. To access the Swagger documentation and the list of all APIs, visit: `http://localhost:3000/docs`
 
 ### Authentication Routes
 
